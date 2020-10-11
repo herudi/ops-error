@@ -1,0 +1,21 @@
+{
+  "name": "ops-error",
+  "version": "1.0.0",
+  "description": "Error handling made in simple for express or other nodejs framework",
+  "main": "index.js",
+  "types": "index.d.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/herudi/ops-error"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": "Herudi",
+  "license": "MIT",
+  "keywords": [
+    "Express Error Handling",
+    "NodeJS Error Handling",
+    "Error Handling"
+  ]
+}
