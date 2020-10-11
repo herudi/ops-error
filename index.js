@@ -100,7 +100,7 @@ const error5xxClass = [
 const getError = (err) => {
     const data = typeof err.getOpsError === 'function' ? err.getOpsError() : {
         statusCode: 500,
-        message: 'Internal Server Error'
+        message: err.message || 'Something went wrong'
     };
     return {
         statusCode: data.statusCode,
