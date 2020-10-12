@@ -1,7 +1,7 @@
 {
-    "name": "ops-error-koa-example",
+    "name": "ops-error-fastify-example",
     "version": "1.0.0",
-    "description": "Example koa",
+    "description": "Example fastify",
     "main": "index.js",
     "scripts": {
         "dev": "nodemon index"
