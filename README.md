@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.0.3-blue.svg)](https://www.npmjs.com/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.0.4-blue.svg)](https://www.npmjs.com/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
 Error handling made in simple for express or other nodejs framework.
@@ -144,6 +144,69 @@ app.use((err, req, res, next) => myError(err, res));
 //     "statusCode": 402,
 //     "error": "User Payment Required"
 // }
+
+...
+
+```
+
+## List Error Available In This Library
+
+```JavaScript
+...
+//for 4xx error
+class BadRequestError extends OpsError { 
+    static code() { return 400 }; 
+    static name() { return 'Bad Request Error'} 
+};
+class UnauthorizedError extends OpsError { 
+    static code() { return 401 }; 
+    static name() { return 'Unauthorized Error'} 
+};
+class ForbiddenError extends OpsError { 
+    static code() { return 403 }; 
+    static name() { return 'Forbidden Error'} 
+};
+class NotFoundError extends OpsError {
+    static code() { return 404 };
+    static name() { return 'Not Found Error'}
+};
+class MethodNotAllowedError extends OpsError {
+    static code() { return 405 };
+    static name() { return 'Method Not Allowed Error'}
+};
+class RequestTimeoutError extends OpsError {
+    static code() { return 408 };
+    static name() { return 'Request Timeout Error'} };
+class ConflictError extends OpsError {
+    static code() { return 409 };
+    static name() { return 'Conflict Error'}
+};
+class UnsupportedMediaTypeError extends OpsError {
+    static code() { return 415 };
+    static name() { return 'Unsupported Media Type Error'}
+};
+class UnprocessableEntityError extends OpsError {
+    static code() { return 422 };
+    static name() { return 'Unprocessable Entity Error'}
+};
+
+//for 5xx error
+class InternalServerError extends OpsError {
+    static code() { return 500 };
+    static name() { return 'Internal Server Error'}
+};
+class NotImplementedError extends OpsError {
+    static code() { return 501 };
+    static name() { return 'Not Implemented Error'}
+};
+class BadGatewayError extends OpsError {
+    static code() { return 502 };
+    static name() { return 'Bad Gateway Error'}
+};
+class ServiceUnavailableError extends OpsError {
+    static code() { return 503 };
+    static name() { return 'Service Unavailable Error'}
+};
 
 ...
 
