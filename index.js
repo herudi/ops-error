@@ -4,7 +4,7 @@ const addThrowErrors = (newErrors) => {
     return newErrors;
 };
 class OpsError extends Error {
-    constructor(message) {
+    constructor(message = null) {
         super();
         this.message = message;
     }
