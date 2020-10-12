@@ -4,7 +4,7 @@ import { PaymentRequiredError } from './customThrowError';
 
 const router = Router();
 
-router.get('/user', (req, res) => {
+router.get('/test', (req, res) => {
     try {
         if (!req.query.name) {
             throw new BadRequestError('Please give query /test?name=yourname');
