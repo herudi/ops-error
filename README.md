@@ -1,5 +1,8 @@
 # OpsError
 
+[![npm version](https://img.shields.io/badge/npm-1.0.3-blue.svg)](https://www.npmjs.com/package/ops-error) 
+[![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
+
 Error handling made in simple for express or other nodejs framework.
 
 ## Features
