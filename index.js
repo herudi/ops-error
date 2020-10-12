@@ -99,7 +99,7 @@ const error5xxClass = [
 ];
 const getError = (err) => {
     const data = typeof err.getOpsError === 'function' ? err.getOpsError() : {
-        statusCode: 500,
+        statusCode: err.statusCode || err.status || 500,
         message: err.message || 'Something went wrong'
     };
     return {

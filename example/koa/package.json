@@ -1,0 +1,19 @@
+{
+    "name": "ops-error-koa-example",
+    "version": "1.0.0",
+    "description": "Example koa",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon index"
+    },
+    "author": "Herudi",
+    "license": "MIT",
+    "dependencies": {
+        "koa": "^2.13.0",
+        "koa-router": "^9.4.0",
+        "ops-error": "^1.0.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.4"
+    }
+}
