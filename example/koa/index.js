@@ -1,10 +1,10 @@
 const Koa = require('koa');
 const Router = require('koa-router');
-const ops = require('ops-error');
+const { addThrowErrors, BadRequestError } = require('ops-error');
 const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
 
 //custom throw error
-ops.addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
+addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = new Koa();
 let router = new Router();
@@ -23,7 +23,7 @@ app.use(async (ctx, next) => {
 router.get('/test', (ctx) => {
     try {
         if (!ctx.query.name) {
-            throw new ops.BadRequestError('Please give query /test?name=yourname');
+            throw new BadRequestError('Please give query /test?name=yourname');
         }
         ctx.status = 200;
         ctx.body = { statusCode: 200, data: ctx.query.name };

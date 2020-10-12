@@ -1,17 +1,17 @@
 const fastify = require('fastify');
-const ops = require('ops-error');
+const { BadRequestError, addThrowErrors } = require('ops-error');
 const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
 const myError = require('./myError');
 
 //custom throw error
-ops.addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
+addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = fastify();
 
 app.get('/test', (request, reply) => {
     try {
         if (!request.query.name) {
-            throw new ops.BadRequestError('Please give query /test?name=yourname');
+            throw new BadRequestError('Please give query /test?name=yourname');
         }
         return reply.send({statusCode: 200, data: request.query.name});
     } catch (error) {

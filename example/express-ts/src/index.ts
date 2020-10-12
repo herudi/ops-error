@@ -1,7 +1,7 @@
-const express = require('express');
-const { BadRequestError, addThrowErrors } = require('ops-error');
-const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
-const myError = require('./myError');
+import express, { NextFunction, Request, Response } from 'express';
+import { addThrowErrors, BadRequestError } from 'ops-error';
+import { PaymentRequiredError, NetworkAuthenticationRequiredError } from './customThrowError';
+import myError from './myError';
 
 //custom throw error
 addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
@@ -30,7 +30,7 @@ app.use('/payment', (req, res) => {
 });
 
 //handling error
-app.use((err, req, res, next) => myError(err, res));
+app.use((err: any, req: Request, res: Response, next: NextFunction) => myError(err, res));
 
 app.listen(3000, () => {
     console.log('Success running ' + 3000);

@@ -6,3 +6,6 @@
 
 /example/fastify/node_modules
 /example/fastify/yarn.lock
+
+/example/express-ts/node_modules
+/example/express-ts/yarn.lock

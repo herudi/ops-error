@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.0.4-blue.svg)](https://www.npmjs.com/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.0.5-blue.svg)](https://www.npmjs.com/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
 Error handling made in simple for express or other nodejs framework.
@@ -11,6 +11,7 @@ Error handling made in simple for express or other nodejs framework.
 - Easy configuration.
 - Add custom error.
 - Add custom throw error.
+- support commonjs, esm and typescript.
 
 ## Installation
 
@@ -23,23 +24,14 @@ $ yarn add ops-error
 For other framework you can find code in example folder.
 
 ```JavaScript
-//myError.js
-
-const { getError } = require("ops-error");
-
-module.exports = (err, res) => {
-    const { statusCode, message } = getError(err);
-    return res.status(statusCode).json({statusCode, error: message})
-}
-
-```
-
-```JavaScript
 //router.js
 
 const express = require('express');
-const ops = require("ops-error");
+const { NotFoundError } = require("ops-error");
 const myError = require("./myError");
+
+// typescript or esm
+// import { NotFoundError } from "ops-error";
 
 let router = express.Router();
 
@@ -47,7 +39,7 @@ router.get('/user', (req, res) => {
     try {
         const data = findUser();
         if (!data) {
-            throw new ops.NotFoundError('User Not Found');
+            throw new NotFoundError('User Not Found');
         }
         return res.status(200).json({
             statusCode: 200,
@@ -65,6 +57,18 @@ router.get('/user', (req, res) => {
 // }
 
 module.exports = router;
+
+```
+
+```JavaScript
+//myError.js
+
+const { getError } = require("ops-error");
+
+module.exports = (err, res) => {
+    const { statusCode, message } = getError(err);
+    return res.status(statusCode).json({statusCode, error: message})
+}
 
 ```
 
@@ -114,8 +118,8 @@ const { OpsError, addThrowErrors } = require("ops-error");
 const myError = require("./myError");
 
 class PaymentRequiredError extends OpsError {
-    static code() { return 402 }
-    static name() { return 'Payment Required Error' }
+    static statusCode() { return 402 }
+    static errorName() { return 'Payment Required Error' }
 }
 
 addThrowErrors([PaymentRequiredError]);
@@ -155,57 +159,57 @@ app.use((err, req, res, next) => myError(err, res));
 ...
 //for 4xx error
 class BadRequestError extends OpsError { 
-    static code() { return 400 }; 
-    static name() { return 'Bad Request Error'} 
+    static statusCode() { return 400 }; 
+    static errorName() { return 'Bad Request Error'} 
 };
 class UnauthorizedError extends OpsError { 
-    static code() { return 401 }; 
-    static name() { return 'Unauthorized Error'} 
+    static statusCode() { return 401 }; 
+    static errorName() { return 'Unauthorized Error'} 
 };
 class ForbiddenError extends OpsError { 
-    static code() { return 403 }; 
-    static name() { return 'Forbidden Error'} 
+    static statusCode() { return 403 }; 
+    static errorName() { return 'Forbidden Error'} 
 };
 class NotFoundError extends OpsError {
-    static code() { return 404 };
-    static name() { return 'Not Found Error'}
+    static statusCode() { return 404 };
+    static errorName() { return 'Not Found Error'}
 };
 class MethodNotAllowedError extends OpsError {
-    static code() { return 405 };
-    static name() { return 'Method Not Allowed Error'}
+    static statusCode() { return 405 };
+    static errorName() { return 'Method Not Allowed Error'}
 };
 class RequestTimeoutError extends OpsError {
-    static code() { return 408 };
-    static name() { return 'Request Timeout Error'} };
+    static statusCode() { return 408 };
+    static errorName() { return 'Request Timeout Error'} };
 class ConflictError extends OpsError {
-    static code() { return 409 };
-    static name() { return 'Conflict Error'}
+    static statusCode() { return 409 };
+    static errorName() { return 'Conflict Error'}
 };
 class UnsupportedMediaTypeError extends OpsError {
-    static code() { return 415 };
-    static name() { return 'Unsupported Media Type Error'}
+    static statusCode() { return 415 };
+    static errorName() { return 'Unsupported Media Type Error'}
 };
 class UnprocessableEntityError extends OpsError {
-    static code() { return 422 };
-    static name() { return 'Unprocessable Entity Error'}
+    static statusCode() { return 422 };
+    static errorName() { return 'Unprocessable Entity Error'}
 };
 
 //for 5xx error
 class InternalServerError extends OpsError {
-    static code() { return 500 };
-    static name() { return 'Internal Server Error'}
+    static statusCode() { return 500 };
+    static errorName() { return 'Internal Server Error'}
 };
 class NotImplementedError extends OpsError {
-    static code() { return 501 };
-    static name() { return 'Not Implemented Error'}
+    static statusCode() { return 501 };
+    static errorName() { return 'Not Implemented Error'}
 };
 class BadGatewayError extends OpsError {
-    static code() { return 502 };
-    static name() { return 'Bad Gateway Error'}
+    static statusCode() { return 502 };
+    static errorName() { return 'Bad Gateway Error'}
 };
 class ServiceUnavailableError extends OpsError {
-    static code() { return 503 };
-    static name() { return 'Service Unavailable Error'}
+    static statusCode() { return 503 };
+    static errorName() { return 'Service Unavailable Error'}
 };
 
 ...

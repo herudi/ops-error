@@ -14,8 +14,8 @@ class OpsError extends Error {
             const Class = errorClass[i];
             if (this instanceof Class) {
                 return {
-                    statusCode: Class.code(),
-                    message: this.message || Class.name()
+                    statusCode: Class.statusCode(),
+                    message: this.message || Class.errorName()
                 };
             }
         }
@@ -28,39 +28,39 @@ class OpsError extends Error {
 
 //4xx error
 class BadRequestError extends OpsError { 
-    static code() { return 400 }; 
-    static name() { return 'Bad Request Error'} 
+    static statusCode() { return 400 }; 
+    static errorName() { return 'Bad Request Error'} 
 };
 class UnauthorizedError extends OpsError { 
-    static code() { return 401 }; 
-    static name() { return 'Unauthorized Error'} 
+    static statusCode() { return 401 }; 
+    static errorName() { return 'Unauthorized Error'} 
 };
 class ForbiddenError extends OpsError { 
-    static code() { return 403 }; 
-    static name() { return 'Forbidden Error'} 
+    static statusCode() { return 403 }; 
+    static errorName() { return 'Forbidden Error'} 
 };
 class NotFoundError extends OpsError {
-    static code() { return 404 };
-    static name() { return 'Not Found Error'}
+    static statusCode() { return 404 };
+    static errorName() { return 'Not Found Error'}
 };
 class MethodNotAllowedError extends OpsError {
-    static code() { return 405 };
-    static name() { return 'Method Not Allowed Error'}
+    static statusCode() { return 405 };
+    static errorName() { return 'Method Not Allowed Error'}
 };
 class RequestTimeoutError extends OpsError {
-    static code() { return 408 };
-    static name() { return 'Request Timeout Error'} };
+    static statusCode() { return 408 };
+    static errorName() { return 'Request Timeout Error'} };
 class ConflictError extends OpsError {
-    static code() { return 409 };
-    static name() { return 'Conflict Error'}
+    static statusCode() { return 409 };
+    static errorName() { return 'Conflict Error'}
 };
 class UnsupportedMediaTypeError extends OpsError {
-    static code() { return 415 };
-    static name() { return 'Unsupported Media Type Error'}
+    static statusCode() { return 415 };
+    static errorName() { return 'Unsupported Media Type Error'}
 };
 class UnprocessableEntityError extends OpsError {
-    static code() { return 422 };
-    static name() { return 'Unprocessable Entity Error'}
+    static statusCode() { return 422 };
+    static errorName() { return 'Unprocessable Entity Error'}
 };
 const error4xxClass = [
     BadRequestError,
@@ -76,20 +76,20 @@ const error4xxClass = [
 
 //5xx error
 class InternalServerError extends OpsError {
-    static code() { return 500 };
-    static name() { return 'Internal Server Error'}
+    static statusCode() { return 500 };
+    static errorName() { return 'Internal Server Error'}
 };
 class NotImplementedError extends OpsError {
-    static code() { return 501 };
-    static name() { return 'Not Implemented Error'}
+    static statusCode() { return 501 };
+    static errorName() { return 'Not Implemented Error'}
 };
 class BadGatewayError extends OpsError {
-    static code() { return 502 };
-    static name() { return 'Bad Gateway Error'}
+    static statusCode() { return 502 };
+    static errorName() { return 'Bad Gateway Error'}
 };
 class ServiceUnavailableError extends OpsError {
-    static code() { return 503 };
-    static name() { return 'Service Unavailable Error'}
+    static statusCode() { return 503 };
+    static errorName() { return 'Service Unavailable Error'}
 };
 const error5xxClass = [
     InternalServerError,

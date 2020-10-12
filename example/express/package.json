@@ -10,7 +10,7 @@
     "license": "MIT",
     "dependencies": {
         "express": "^4.17.1",
-        "ops-error": "^1.0.1"
+        "ops-error": "^1.0.5"
     },
     "devDependencies": {
         "nodemon": "^2.0.4"
