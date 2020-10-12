@@ -14,9 +14,9 @@ app.use(async (ctx, next) => {
     try {
         await next();
     } catch (err) {
-        const { statusCode, message } = ops.getError(err);
+        const { statusCode, name, message } = ops.getError(err);
         ctx.status = statusCode;
-        ctx.body = {statusCode, error: message};
+        ctx.body = {statusCode, name, message};
     }
 });
 

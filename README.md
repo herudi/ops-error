@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.0.8-blue.svg)](https://www.npmjs.com/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.0-blue.svg)](https://www.npmjs.com/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
 Error handling made in simple for express or other nodejs framework.
@@ -9,9 +9,9 @@ Error handling made in simple for express or other nodejs framework.
 
 - Easy to use.
 - Easy configuration.
-- Add custom error.
-- Add custom throw error.
-- support commonjs, esm and typescript.
+- Custom throw error.
+- Support Commonjs, ES6+ and Typescript.
+- Support expressJS, koa, fastify and other framework nodejs.
 
 ## Installation
 
@@ -48,8 +48,8 @@ router.get('/user', (req, res) => {
             statusCode: 200,
             data
         })
-    } catch (error) {
-        return myError(error, res);
+    } catch (err) {
+        return myError(err, res);
     }
 });
 
@@ -69,8 +69,8 @@ module.exports = router;
 const { getError } = require("ops-error");
 
 module.exports = (err, res) => {
-    const { statusCode, message } = getError(err);
-    return res.status(statusCode).json({statusCode, error: message})
+    const { statusCode, name, message } = getError(err);
+    return res.status(statusCode).json({statusCode, name, message})
 }
 
 ```
@@ -122,7 +122,6 @@ const myError = require("./myError");
 
 class PaymentRequiredError extends OpsError {
     static statusCode() { return 402 }
-    static errorName() { return 'Payment Required Error' }
 }
 
 addThrowErrors([PaymentRequiredError]);
@@ -158,66 +157,28 @@ app.use((err, req, res, next) => myError(err, res));
 
 ## List Error Available In This Library
 
-```JavaScript
-...
-//for 4xx error
-class BadRequestError extends OpsError { 
-    static statusCode() { return 400 }; 
-    static errorName() { return 'Bad Request Error'} 
-};
-class UnauthorizedError extends OpsError { 
-    static statusCode() { return 401 }; 
-    static errorName() { return 'Unauthorized Error'} 
-};
-class ForbiddenError extends OpsError { 
-    static statusCode() { return 403 }; 
-    static errorName() { return 'Forbidden Error'} 
-};
-class NotFoundError extends OpsError {
-    static statusCode() { return 404 };
-    static errorName() { return 'Not Found Error'}
-};
-class MethodNotAllowedError extends OpsError {
-    static statusCode() { return 405 };
-    static errorName() { return 'Method Not Allowed Error'}
-};
-class RequestTimeoutError extends OpsError {
-    static statusCode() { return 408 };
-    static errorName() { return 'Request Timeout Error'} };
-class ConflictError extends OpsError {
-    static statusCode() { return 409 };
-    static errorName() { return 'Conflict Error'}
-};
-class UnsupportedMediaTypeError extends OpsError {
-    static statusCode() { return 415 };
-    static errorName() { return 'Unsupported Media Type Error'}
-};
-class UnprocessableEntityError extends OpsError {
-    static statusCode() { return 422 };
-    static errorName() { return 'Unprocessable Entity Error'}
-};
+|Class |Code |
+|--- |--- |
+|`BadRequestError`|400|
+|`UnauthorizedError`|401|
+|`ForbiddenError`|403|
+|`NotFoundError`|404|
+|`MethodNotAllowedError`|405|
+|`RequestTimeoutError`|408|
+|`ConflictError`|409|
+|`UnsupportedMediaTypeError`|415|
+|`UnprocessableEntityError`|422|
+|`InternalServerError`|500|
+|`NotImplementedError`|501|
+|`BadGatewayError`|502|
+|`ServiceUnavailableError`|503|
 
-//for 5xx error
-class InternalServerError extends OpsError {
-    static statusCode() { return 500 };
-    static errorName() { return 'Internal Server Error'}
-};
-class NotImplementedError extends OpsError {
-    static statusCode() { return 501 };
-    static errorName() { return 'Not Implemented Error'}
-};
-class BadGatewayError extends OpsError {
-    static statusCode() { return 502 };
-    static errorName() { return 'Bad Gateway Error'}
-};
-class ServiceUnavailableError extends OpsError {
-    static statusCode() { return 503 };
-    static errorName() { return 'Service Unavailable Error'}
-};
+## Method
 
-...
-
-```
+|Name |Description |
+|--- |--- |
+|`getError`|Display error status, name and message. Example =>  `const { statusCode, name, message } = getError(err);`|
+|`addThrowErrors`|Add custom throw error. Example =>  `addThrowErrors([SomeErrorClass])`
 
 For other framework you can find code in example folder
 
