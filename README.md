@@ -1,7 +1,8 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.2-blue.svg)](https://www.npmjs.com/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.3-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
+[![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 
 Error handling made in simple for express, koa, fastify and other your favorite nodejs framework.
 
@@ -183,8 +184,8 @@ module.exports = (err, req, res) => {
         request: req,
         debug: false // or true
     }
-    const { statuscCode, name, message } = getOpsError(err, option);
-    return res.status(statuscCode).json({ statuscCode, name, message });
+    const { statusCode, name, message } = getOpsError(err, option);
+    return res.status(statusCode).json({ statusCode, name, message });
 }
 
 ```
