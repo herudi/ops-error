@@ -1,0 +1,18 @@
+{
+    "name": "ops-error-fastify-example",
+    "version": "1.0.0",
+    "description": "Example fastify",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon index"
+    },
+    "author": "Herudi",
+    "license": "MIT",
+    "dependencies": {
+        "fastify": "^3.6.0",
+        "ops-error": "^1.1.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.4"
+    }
+}
