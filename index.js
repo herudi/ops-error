@@ -1,4 +1,4 @@
-function insertSpaces(string) {
+function withSpace(string) {
     string = string.replace(/([a-z])([A-Z])/g, '$1 $2');
     string = string.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
     return string;
@@ -20,8 +20,8 @@ class OpsError extends Error {
             if (this instanceof Class) {
                 return {
                     statusCode: Class.statusCode(),
-                    name: insertSpaces(Class.name) || 'Unknown Error',
-                    message: this.message || insertSpaces(Class.name)
+                    name: withSpace(Class.name) || 'Unknown Error',
+                    message: this.message || withSpace(Class.name)
                 };
             }
         }
@@ -34,14 +34,14 @@ class OpsError extends Error {
 }
 
 //4xx error
-class BadRequestError extends OpsError { 
-    static statusCode() { return 400 }; 
+class BadRequestError extends OpsError {
+    static statusCode() { return 400 };
 };
-class UnauthorizedError extends OpsError { 
-    static statusCode() { return 401 }; 
+class UnauthorizedError extends OpsError {
+    static statusCode() { return 401 };
 };
-class ForbiddenError extends OpsError { 
-    static statusCode() { return 403 }; 
+class ForbiddenError extends OpsError {
+    static statusCode() { return 403 };
 };
 class NotFoundError extends OpsError {
     static statusCode() { return 404 };
@@ -92,13 +92,39 @@ const error5xxClass = [
     BadGatewayError,
     ServiceUnavailableError
 ];
-const getError = (err) => {
+
+const debugResponse = ({ error, request, httpCode }) => {
+    let stack;
+    let _debugResponse;
+    if (error.stack) {
+        stack = error.stack.split('\n');
+        stack.shift();
+        stack = stack
+            .filter(line => line.indexOf('node_modules') === -1)
+            .map(line => line.trim());
+    };
+    if (stack) {
+        _debugResponse = {
+            stack,
+            request: {
+                method: request.method,
+                uri: request.originalUrl || request.url,
+                body: request.body,
+                headers: request.headers || request.header
+            },
+            httpCode
+        }
+    }
+    return _debugResponse;
+};
+
+const getErrorObject = (err) => {
     let error = {};
     if (typeof err.getOpsError === 'function') {
         error = err.getOpsError();
-    }else{
+    } else {
         let statusCode = err.statusCode || err.status || 500;
-        let name = statusCode === 500 ? 'Internal Server Error' : 'UnknownError';
+        let name = statusCode === 500 ? 'Internal Server Error' : 'Unknown Error';
         error = {
             statusCode,
             name: err.name || name,
@@ -110,6 +136,55 @@ const getError = (err) => {
         name: error.name,
         message: error.message
     }
+}
+
+const getOpsError = (error, { request, debug = false } = {}) => {
+    let responseData = getErrorObject(error);
+    if (error.body) {
+        responseData.message = 'Could not parse JSON body.';
+    }
+    if (debug) {
+        responseData.debug = debugResponse({
+            error,
+            request,
+            httpCode: responseData.statusCode
+        });
+        try { console.log(require('util').inspect(responseData)) } catch {}
+        
+    };
+    return responseData;
+};
+
+const expressOpsError = ({ debug = false, transform = null } = {}) => async (err, req, res, next) => {
+    const opsError = getOpsError(err, { debug, request: req });
+    if (transform) {
+        const responseData = await transform({ err, req, res, next, data: opsError });
+        return responseData;
+    }
+    return res.status(opsError.statusCode).json(opsError);
+};
+
+const koaOpsError = ({ debug = false, transform = null } = {}) => async (ctx, next) => {
+    try {
+        await next();
+    } catch (err) {
+        const opsError = getOpsError(err, { debug, request: ctx.request });
+        if (transform) {
+            const responseData = await transform({ err, req: ctx.request, res: ctx.response, next, data: opsError });
+            return responseData;
+        }
+        ctx.status = opsError.statusCode;
+        ctx.body = opsError;
+    }
+}
+
+const fastifyOpsError = ({ debug = false, transform = null } = {}) => async (err, req, res, next) => {
+    const opsError = getOpsError(err, { debug, request: req });
+    if (transform) {
+        const responseData = await transform({ err, req, res, next, data: opsError });
+        return responseData;
+    }
+    return res.status(opsError.statusCode).send(opsError);
 }
 
 module.exports = {
@@ -130,5 +205,8 @@ module.exports = {
     BadGatewayError,
     ServiceUnavailableError,
     addThrowErrors,
-    getError
+    getOpsError,
+    expressOpsError,
+    koaOpsError,
+    fastifyOpsError
 }

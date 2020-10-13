@@ -1,35 +1,25 @@
 const fastify = require('fastify');
-const { BadRequestError, addThrowErrors } = require('ops-error');
+const { addThrowErrors, fastifyOpsError } = require('ops-error');
 const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
-const myError = require('./myError');
+const setUpRouter = require('./router');
 
 //custom throw error
 addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = fastify();
 
-app.get('/test', (request, reply) => {
-    try {
-        if (!request.query.name) {
-            throw new BadRequestError('Please give query /test?name=yourname');
-        }
-        return reply.send({statusCode: 200, data: request.query.name});
-    } catch (error) {
-        return myError(error, reply);
+//handling error
+app.setErrorHandler(fastifyOpsError({
+    debug: true,
+    transform: ({ err, req, res, next, data }) => {
+        return res.status(data.statusCode).send(data);
     }
-});
+}));
 
-app.get('/payment', (request, reply) => {
-    try {
-        find()
-        if (!request.query.pay) {
-            throw new PaymentRequiredError('Payment required. please give query /payment?pay=5000');
-        }
-        return reply.send({statusCode: 200, data: request.query.pay});
-    } catch (error) {
-        return myError(error, reply);
-    }
-});
+// if you want handling error without debug and transform
+// app.setErrorHandler(fastifyOpsError());
+
+setUpRouter(app);
 
 app.listen(3000, () => {
     console.log('Success running ' + 3000);

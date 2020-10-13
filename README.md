@@ -1,9 +1,9 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.0-blue.svg)](https://www.npmjs.com/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.2-blue.svg)](https://www.npmjs.com/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
-Error handling made in simple for express or other nodejs framework.
+Error handling made in simple for express, koa, fastify and other your favorite nodejs framework.
 
 ## Features
 
@@ -11,7 +11,7 @@ Error handling made in simple for express or other nodejs framework.
 - Easy configuration.
 - Custom throw error.
 - Support Commonjs, ES6+ and Typescript.
-- Support expressJS, koa, fastify and other framework nodejs.
+- Support expressJS, koa, fastify and other nodejs framework.
 
 ## Installation
 
@@ -20,24 +20,185 @@ $ npm install ops-error
 //or
 $ yarn add ops-error
 ```
-## Example Express
-For other framework you can find code in example folder.
+## Throwing error in route with try catch
+For complete code you can find code in example folder.
 
 ```JavaScript
-//router.js
 
+// router.js
+...
+
+const { NotFoundError } = require("ops-error");
+
+//example route
+router.get('/user', async (req, res) => {
+    try {
+        const data = await findUser();
+        if (!data) {
+            throw new NotFoundError('User Not Found');
+            // or
+            // throw new NotFoundError();
+            // message will generete => "Not Found Error"
+        }
+        return res.status(200).json({
+            statusCode: 200,
+            data
+        })
+    } catch (error) {
+        throw error;
+    }
+});
+
+module.exports = router;
+// or esm and typescript
+// export default router;
+
+...
+
+```
+
+## Handling error using middleware
+Framework default available Express, Koa and Fastify. you can use this library in your favorite nodejs framework. just put in the middleware and throw the error or you can put in the catch error to return the error messages.
+
+```JavaScript
+...
+
+// Example for Express
 const express = require('express');
+const { expressOpsError } = require('ops-error');
+
+const app = express();
+app.use(yourRouteHere);
+app.use(expressOpsError());
+
+// response error :
+// {
+//     "statusCode": 404,
+//     "name": "Not Found Error",
+//     "message": "User Not Found"
+// }
+...
+```
+
+```JavaScript
+...
+
+// Example for Koa
+const Koa = require('koa');
+const { koaOpsError } = require('ops-error');
+
+const app = new Koa();
+app.use(koaOpsError());
+app.use(yourRouteHere);
+
+// response error :
+// {
+//     "statusCode": 404,
+//     "name": "Not Found Error",
+//     "message": "User Not Found"
+// }
+...
+```
+
+```JavaScript
+...
+
+// Example for Fastify
+const fastify = require('fastify');
+const { fastifyOpsError } = require('ops-error');
+
+const app = fastify();
+app.setErrorHandler(fastifyOpsError());
+app.use(yourRouteHere);
+
+// response error :
+// {
+//     "statusCode": 404,
+//     "name": "Not Found Error",
+//     "message": "User Not Found"
+// }
+...
+```
+
+```JavaScript
+...
+
+// Example for Express with debug and transform
+const express = require('express');
+const { expressOpsError } = require('ops-error');
+
+const app = express();
+app.use(yourRouteHere);
+app.use(expressOpsError({
+    debug: true,
+    transform: ({ err, req, res, next, data }) => {
+        if (err instanceof Sequelize.ValidationError) {
+            return res.status(422).json({
+                statusCode: 422,
+                message: err.message
+            });
+        }
+        return res.status(data.statusCode).json(data);
+    }
+}));
+
+// response error :
+// {
+//     "statusCode": 404,
+//     "name": "Not Found Error",
+//     "message": "User Not Found",
+//     "debug": {
+//         "stack": [
+//             "at Z:\\nodejs\\ops-error\\example\\express\\index.js:23:19"
+//         ],
+//         "request": {
+//             "method": "GET",
+//             "uri": "/payment",
+//             "headers": {
+//                 "user-agent": "PostmanRuntime/7.26.5",
+//                 "accept": "*/*",
+//                 "postman-token": "7e6ee0e1-c692-40db-b71b-7284c80e22bb",
+//                 "host": "localhost:3000",
+//                 "accept-encoding": "gzip, deflate, br",
+//                 "connection": "keep-alive"
+//             }
+//         },
+//         "httpCode": 402
+//     }
+// }
+
+...
+```
+
+## Other handling error
+
+```JavaScript
+
+// myError.js
+
+const { getOpsError } = require("ops-error");
+
+module.exports = (err, req, res) => {
+    const option = {
+        request: req,
+        debug: false // or true
+    }
+    const { statuscCode, name, message } = getOpsError(err, option);
+    return res.status(statuscCode).json({ statuscCode, name, message });
+}
+
+```
+
+```JavaScript
+
+// router.js
+
 const { NotFoundError } = require("ops-error");
 const myError = require("./myError");
 
-// typescript or esm
-// import { NotFoundError } from "ops-error";
-
-let router = express.Router();
-
-router.get('/user', (req, res) => {
+router.get('/user', async (req, res) => {
     try {
-        const data = findUser();
+        const data = await findUser();
         if (!data) {
             throw new NotFoundError('User Not Found');
             // or
@@ -49,111 +210,89 @@ router.get('/user', (req, res) => {
             data
         })
     } catch (err) {
-        return myError(err, res);
+        // this handle error
+        return myError(err, req, res);
     }
 });
 
-// response error :
-// {
-//     "statusCode": 404,
-//     "error": "User Not Found"
-// }
+```
+
+## Custom throw error
+
+```JavaScript
+
+// PaymentRequiredError.js
+
+const { OpsError } = require("ops-error");
+
+class PaymentRequiredError extends OpsError {
+    static statusCode(){ return 402 }
+}
+
+module.exports = PaymentRequiredError;
+
+```
+
+```JavaScript
+
+// router.js
+
+const { Router } = require('express');
+const PaymentRequiredError = require("./PaymentRequiredError");
+
+const router = Router();
+
+router.get('/user', async (req, res) => {
+    try {
+        const data = await findUser();
+        if (!data) {
+            throw new PaymentRequiredError('User payment is required');
+            // or
+            // throw new PaymentRequiredError();
+            // message will generete => "Payment Required Error"
+        }
+        return res.status(200).json({
+            statusCode: 200,
+            data
+        })
+    } catch (error) {
+        throw error;
+    }
+});
 
 module.exports = router;
 
 ```
 
 ```JavaScript
-//myError.js
 
-const { getError } = require("ops-error");
+// index.js or app.js
 
-module.exports = (err, res) => {
-    const { statusCode, name, message } = getError(err);
-    return res.status(statusCode).json({statusCode, name, message})
-}
+const express = require("express");
+const { NotFoundError, expressOpsError, addThrowErrors } = require("ops-error");
+const PaymentRequiredError = require("./PaymentRequiredError");
+const router = require("./router");
 
-```
-
-## Middleware Error Handling
-
-```JavaScript
-...
-
-const { NotFoundError } = require("ops-error");
-const myError = require("./myError");
-
-//example route
-app.use('/user', async (req, res) => {
-    try {
-        const data = await findUser();
-        if (!data) {
-            throw new NotFoundError('User Not Found');
-        }
-        return res.status(200).json({
-            statusCode: 200,
-            data
-        })
-    } catch (error) {
-        throw error;
-    }
-});
-
-//error handling middleware after route in express
-app.use((err, req, res, next) => myError(err, res));
-
-// response error :
-// {
-//     "statusCode": 404,
-//     "error": "User Not Found"
-// }
-
-...
-
-```
-
-## Add Custom Throw Error
-
-```JavaScript
-...
-
-const { OpsError, addThrowErrors } = require("ops-error");
-const myError = require("./myError");
-
-class PaymentRequiredError extends OpsError {
-    static statusCode() { return 402 }
-}
-
+// add custom throw error
 addThrowErrors([PaymentRequiredError]);
 
-//example route
-app.use('/user-payment', async (req, res) => {
-    try {
-        const data = await findUserPayment();
-        if (!data) {
-            throw new PaymentRequiredError('User Payment Required');
-        }
-        return res.status(200).json({
-            statusCode: 200,
-            data
-        })
-    } catch (error) {
-        throw error;
-    }
-});
-
-//error handling middleware after route in express
-app.use((err, req, res, next) => myError(err, res));
+const app = express();
+app.use('/api/v1', router);
+app.use(expressOpsError());
 
 // response error :
 // {
 //     "statusCode": 402,
-//     "error": "User Payment Required"
+//     "name": "Payment Required Error",
+//     "message": "User payment is required"
 // }
 
-...
+app.listen(3000, () => {
+    console.log('Success running ' + 3000);
+});
 
 ```
+
 
 ## List Error Available In This Library
 
@@ -177,10 +316,13 @@ app.use((err, req, res, next) => myError(err, res));
 
 |Name |Description |
 |--- |--- |
-|`getError`|Display error status, name and message. Example =>  `const { statusCode, name, message } = getError(err);`|
-|`addThrowErrors`|Add custom throw error. Example =>  `addThrowErrors([SomeErrorClass])`
+|`getOpsError`|Display error status, name and message. Example =>  `const { statusCode, name, message } = getError(err, option?);`|
+|`addThrowErrors`|Add custom throw error. Example =>  `addThrowErrors([SomeErrorClass]);`|
+|`expressOpsError`|Middleware error handling for express. Example =>  `app.use(expressOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
+|`koaOpsError`|Middleware error handling for Koa. Example =>  `app.use(koaOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
+|`fastifyOpsError`|Middleware error handling for Koa. Example =>  `app.setErrorHandler(fastifyOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
 
-For other framework you can find code in example folder
+For complete code you can find code in example folder.
 
 Contact me : herudi7@gmail.com
 
