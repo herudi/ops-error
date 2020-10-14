@@ -99,12 +99,12 @@ const debugResponse = ({ error, request, httpCode }) => {
     if (stack) {
         _debugResponse = {
             stack,
-            request: {
+            request: request ? {
                 method: request.method,
                 uri: request.originalUrl || request.url,
                 body: request.body,
                 headers: request.headers || request.header
-            },
+            } : undefined,
             httpCode
         }
     }
@@ -115,13 +115,17 @@ const getErrorObject = (err) => {
     let code = err.code || err.statusCode || err.status || 500;
     let name = code === 500 ? 'Internal Server Error' : 'Unknown Error';
     return {
-        code,
+        statusCode: code,
         name: err.name || name,
         message: err.message || 'Something went wrong'
     }
 }
 
-const getOpsError = (error, { request, debug = false } = {}) => {
+const opsErrorPrint = (data) => {
+    try { console.dir(data,{depth:null}) } catch {console.log(data)}
+}
+
+const getOpsError = (error, { request, debug = false, logging = null } = {}) => {
     let responseData = getErrorObject(error);
     if (error.body) {
         responseData.message = 'Could not parse JSON body.';
@@ -130,48 +134,23 @@ const getOpsError = (error, { request, debug = false } = {}) => {
         responseData.debug = debugResponse({
             error,
             request,
-            httpCode: responseData.code
+            httpCode: responseData.statusCode
         });
-        try { console.log(require('util').inspect(responseData)) } catch {}
-        
+        opsErrorPrint(responseData);
     };
+    if (logging) {
+        const log = responseData.debug || debugResponse({
+            error,
+            request,
+            httpCode: responseData.statusCode
+        });
+        logging({
+            ...responseData,
+            debug: log
+        });
+    }
     return responseData;
 };
-
-const expressOpsError = ({ debug = false, transform = null } = {}) => async (err, req, res, next) => {
-    const { code: statusCode, name, message, debug: trace } = getOpsError(err, { debug, request: req });
-    const opsError = { statusCode, name, message, debug: trace };
-    if (transform) {
-        const responseData = await transform({ err, req, res, next, data: opsError });
-        return responseData;
-    }
-    return res.status(opsError.statusCode).json(opsError);
-};
-
-const koaOpsError = ({ debug = false, transform = null } = {}) => async (ctx, next) => {
-    try {
-        await next();
-    } catch (err) {
-        const { code: statusCode, name, message, debug: trace } = getOpsError(err, { debug, request: ctx.request });
-        const opsError = { statusCode, name, message, debug: trace };
-        if (transform) {
-            const responseData = await transform({ err, req: ctx.request, res: ctx.response, next, data: opsError });
-            return responseData;
-        }
-        ctx.status = opsError.statusCode;
-        ctx.body = opsError;
-    }
-}
-
-const fastifyOpsError = ({ debug = false, transform = null } = {}) => async (err, req, res, next) => {
-    const { code: statusCode, name, message, debug: trace } = getOpsError(err, { debug, request: req });
-    const opsError = { statusCode, name, message, debug: trace };
-    if (transform) {
-        const responseData = await transform({ err, req, res, next, data: opsError });
-        return responseData;
-    }
-    return res.status(opsError.statusCode).send(opsError);
-}
 
 module.exports = {
     OpsError,
@@ -191,7 +170,5 @@ module.exports = {
     BadGatewayError,
     ServiceUnavailableError,
     getOpsError,
-    expressOpsError,
-    koaOpsError,
-    fastifyOpsError
+    opsErrorPrint
 }

@@ -67,23 +67,13 @@ export class ServiceUnavailableError extends OpsError {
     getCode(): number;
     getName(): string;
 }
-export function getOpsError(error: any, { request, debug }?: {
+export function getOpsError(error: any, { request, debug, logging }?: {
     request: any;
     debug?: boolean;
+    logging?: any;
 }): {
-    code: any;
+    statusCode: any;
     name: any;
     message: any;
 };
-export function expressOpsError({ debug, transform }?: {
-    debug?: boolean;
-    transform?: any;
-}): (err: any, req: any, res: any, next: any) => Promise<any>;
-export function koaOpsError({ debug, transform }?: {
-    debug?: boolean;
-    transform?: any;
-}): (ctx: any, next: any) => Promise<any>;
-export function fastifyOpsError({ debug, transform }?: {
-    debug?: boolean;
-    transform?: any;
-}): (err: any, req: any, res: any, next: any) => Promise<any>;
+export function opsErrorPrint(data: any): void;

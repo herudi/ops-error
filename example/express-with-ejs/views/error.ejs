@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Ops Error</title>
+
+    <style>
+        * {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #f2f4f5;
+        }
+
+        .error {
+            width: 35%;
+            text-align: center;
+            font-family: sans-serif;
+            color: #424242;
+        }
+
+        .container-error {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+            width: 100%;
+        }
+
+        .error .error-inner h1 {
+            font-size: 252px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .error .error-inner h2 {
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .error .error-inner h3 {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .error .error-inner .message  {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        @media only screen and (max-width: 767px) {
+            .error {
+                width: 90%;
+            }
+            .error .error-inner h1 {
+                font-size: 140px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-error">
+        <div class="error">
+            <div class="error-inner">
+                <h2>Ops Error !</h2>
+                <h1><%= statusCode %></h1>
+                <h3><%= name %></h3>
+                <p class="message"><%= message %></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

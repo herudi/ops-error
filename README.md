@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.4-blue.svg)](https://npmjs.org/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.6-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 [![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 
@@ -11,6 +11,7 @@ Error handling made in simple for express, koa, fastify and other your favorite 
 - Easy to use.
 - Easy configuration.
 - Custom throw error.
+- Debuging and logging.
 - Support Commonjs, ES6+ and Typescript.
 - Support expressJS, koa, fastify and other nodejs framework.
 
@@ -24,12 +25,14 @@ $ yarn add ops-error
 ## Throwing error in route with try catch
 For complete code you can find code in example folder.
 
-```JavaScript
+```js
 
 // router.js
 ...
 
 const { NotFoundError } = require("ops-error");
+// or esm and typescript
+// import { NotFoundError } from "ops-error";
 
 //example route
 router.get('/user', async (req, res) => {
@@ -59,91 +62,41 @@ module.exports = router;
 ```
 
 ## Handling error using middleware
-Framework default available Express, Koa and Fastify. you can use this library in your favorite nodejs framework. just put in the middleware and throw the error or you can put in the catch error to return the error messages.
+For other framework you can find in example folder.
 
-```JavaScript
+```js
 ...
 
-// Example for Express
+// for example Express
 const express = require('express');
-const { expressOpsError } = require('ops-error');
+const { getOpsError } = require('ops-error');
+const router = require('./router');
 
 const app = express();
-app.use(yourRouteHere);
-app.use(expressOpsError());
+app.use('/', router);
 
-// response error :
-// {
-//     "statusCode": 404,
-//     "name": "NotFoundError",
-//     "message": "User Not Found"
-// }
-...
-```
-
-```JavaScript
-...
-
-// Example for Koa
-const Koa = require('koa');
-const { koaOpsError } = require('ops-error');
-
-const app = new Koa();
-app.use(koaOpsError());
-app.use(yourRouteHere);
-
-// response error :
-// {
-//     "statusCode": 404,
-//     "name": "NotFoundError",
-//     "message": "User Not Found"
-// }
-...
-```
-
-```JavaScript
-...
-
-// Example for Fastify
-const fastify = require('fastify');
-const { fastifyOpsError } = require('ops-error');
-
-const app = fastify();
-app.setErrorHandler(fastifyOpsError());
-app.use(yourRouteHere);
-
-// response error :
-// {
-//     "statusCode": 404,
-//     "name": "NotFoundError",
-//     "message": "User Not Found"
-// }
-...
-```
-
-```JavaScript
-...
-
-// Example for Express with debug and transform
-const express = require('express');
-const { expressOpsError } = require('ops-error');
-
-const app = express();
-app.use(yourRouteHere);
-app.use(expressOpsError({
-    debug: true,
-    transform: ({ err, req, res, next, data }) => {
-        if (err instanceof Sequelize.ValidationError) {
-            return res.status(422).json({
-                statusCode: 422,
-                message: err.message
-            });
+// simple error handling
+app.use((err, req, res, next) => {
+    // optional config
+    const option = { 
+        debug: true,
+        request: req,
+        logging: (log) => {
+            // Save error log
         }
-        return res.status(data.statusCode).json(data);
-    }
-}));
+    };
+    const data = getOpsError(err, option);
+    return res.status(data.statusCode).json(data);
+});
 
-// response error :
+// example response error :
+// {
+//     "statusCode": 404,
+//     "name": "NotFoundError",
+//     "message": "User Not Found"
+// }
+
+// example response error if debug = true :
 // {
 //     "statusCode": 404,
 //     "name": "NotFoundError",
@@ -168,29 +121,25 @@ app.use(expressOpsError({
 //     }
 // }
 
-...
 ```
 
 ## Other handling error
+you can use send error in catch
 
-```JavaScript
+```js
 
 // myError.js
 
 const { getOpsError } = require("ops-error");
 
-module.exports = (err, req, res) => {
-    const option = {
-        request: req,
-        debug: false // or true
-    }
-    const { code: statusCode, name, message, debug } = getOpsError(err, option);
-    return res.status(statusCode).json({ statusCode, name, message, debug });
+module.exports = (err, res) => {
+    const data = getOpsError(err);
+    return res.status(data.statusCode).json(data);
 }
 
 ```
 
-```JavaScript
+```js
 
 // router.js
 
@@ -202,9 +151,6 @@ router.get('/user', async (req, res) => {
         const data = await findUser();
         if (!data) {
             throw new NotFoundError('User Not Found');
-            // or
-            // throw new NotFoundError();
-            // message will generete => "Not Found Error"
         }
         return res.status(200).json({
             statusCode: 200,
@@ -212,7 +158,7 @@ router.get('/user', async (req, res) => {
         })
     } catch (err) {
         // this handle error
-        return myError(err, req, res);
+        return myError(err, res);
     }
 });
 
@@ -220,7 +166,7 @@ router.get('/user', async (req, res) => {
 
 ## Custom throw error
 
-```JavaScript
+```js
 
 // PaymentRequiredError.js
 
@@ -235,7 +181,7 @@ module.exports = PaymentRequiredError;
 
 ```
 
-```JavaScript
+```js
 
 // router.js
 
@@ -294,12 +240,9 @@ module.exports = router;
 
 |Name |Description |
 |--- |--- |
-|`getOpsError`|Display error status, name and message. Example =>  `const { statusCode, name, message } = getError(err, option?);`|
-|`expressOpsError`|Middleware error handling for express. Example =>  `app.use(expressOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
-|`koaOpsError`|Middleware error handling for Koa. Example =>  `app.use(koaOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
-|`fastifyOpsError`|Middleware error handling for Koa. Example =>  `app.setErrorHandler(fastifyOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
+|`getOpsError`|Display error status, name and message. Example =>  `const { statusCode, name, message, debug } = getError(err, option?);`|
+|`opsErrorPrint`|print in terminal. Example => `opsErrorPrint(data)`|
 
-For complete code you can find code in example folder.
 
 Contact me : herudi7@gmail.com
 

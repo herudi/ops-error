@@ -12,17 +12,7 @@ const init = async () => {
     setUpRouter(app);
 
     //handling error
-    app.ext('onPreResponse', hapiOpsError({
-        debug: true,
-        transform: ({err, req, hapi, data}) => {
-            // your logic error here
-            // if(true) return blah;
-            return hapi.response(data).code(data.statusCode);
-        }
-    }));
-
-    // if you want handling error without debug and transform
-    // app.ext('onPreResponse', hapiOpsError());
+    app.ext('onPreResponse', hapiOpsError());
 
     await app.start();
     console.log('Success running ' + 3000);

@@ -1,7 +1,7 @@
 {
-    "name": "ops-error-fastify-example",
+    "name": "ops-error-express-ejs-example",
     "version": "1.0.0",
-    "description": "Example fastify",
+    "description": "Example express ejs",
     "main": "index.js",
     "scripts": {
         "dev": "nodemon index"
@@ -9,7 +9,8 @@
     "author": "Herudi",
     "license": "MIT",
     "dependencies": {
-        "fastify": "^3.6.0",
+        "ejs": "^3.1.5",
+        "express": "^4.17.1",
         "ops-error": "^1.1.6"
     },
     "devDependencies": {

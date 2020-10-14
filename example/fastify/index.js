@@ -1,21 +1,11 @@
 const fastify = require('fastify');
-const { fastifyOpsError } = require('ops-error');
+const fastifyOpsError = require('./fastifyOpsError');
 const setUpRouter = require('./router');
 
 let app = fastify();
 
 //handling error
-app.setErrorHandler(fastifyOpsError({
-    debug: true,
-    transform: ({ err, req, res, next, data }) => {
-        // your logic error here
-        // if(true) return blah;
-        return res.status(data.statusCode).send(data);
-    }
-}));
-
-// if you want handling error without debug and transform
-// app.setErrorHandler(fastifyOpsError());
+app.setErrorHandler(fastifyOpsError());
 
 setUpRouter(app);
 

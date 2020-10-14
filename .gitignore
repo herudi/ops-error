@@ -1,3 +1,5 @@
+wiki.md
+
 /example/express/node_modules
 /example/express/yarn.lock
 
@@ -15,3 +17,6 @@
 
 /example/restify/node_modules
 /example/restify/yarn.lock
+
+/example/express-with-ejs/node_modules
+/example/express-with-ejs/yarn.lock

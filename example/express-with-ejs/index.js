@@ -2,7 +2,8 @@ const express = require('express');
 const expressOpsError = require('./expressOpsError');
 const router = require('./router');
 
-let app = express();
+const app = express();
+app.set('view engine', 'ejs');
 app.use('/', router);
 
 //handling error
