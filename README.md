@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.7-blue.svg)](https://npmjs.org/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.8-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 [![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 

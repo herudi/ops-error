@@ -68,7 +68,7 @@ export class ServiceUnavailableError extends OpsError {
     getName(): string;
 }
 export function getOpsError(error: any, { request, debug, logging }?: {
-    request: any;
+    request?: any;
     debug?: boolean;
     logging?: any;
 }): {
