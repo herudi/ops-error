@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const { BadRequestError } = require('ops-error');
-const { PaymentRequiredError } = require('./customThrowError');
+const PaymentRequiredError = require('./PaymentRequiredError');
 
 const router = new Router();
 

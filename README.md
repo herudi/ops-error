@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.3-blue.svg)](https://npmjs.org/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.4-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 [![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 
@@ -75,7 +75,7 @@ app.use(expressOpsError());
 // response error :
 // {
 //     "statusCode": 404,
-//     "name": "Not Found Error",
+//     "name": "NotFoundError",
 //     "message": "User Not Found"
 // }
 ...
@@ -95,7 +95,7 @@ app.use(yourRouteHere);
 // response error :
 // {
 //     "statusCode": 404,
-//     "name": "Not Found Error",
+//     "name": "NotFoundError",
 //     "message": "User Not Found"
 // }
 ...
@@ -115,7 +115,7 @@ app.use(yourRouteHere);
 // response error :
 // {
 //     "statusCode": 404,
-//     "name": "Not Found Error",
+//     "name": "NotFoundError",
 //     "message": "User Not Found"
 // }
 ...
@@ -146,7 +146,7 @@ app.use(expressOpsError({
 // response error :
 // {
 //     "statusCode": 404,
-//     "name": "Not Found Error",
+//     "name": "NotFoundError",
 //     "message": "User Not Found",
 //     "debug": {
 //         "stack": [
@@ -184,8 +184,8 @@ module.exports = (err, req, res) => {
         request: req,
         debug: false // or true
     }
-    const { statusCode, name, message } = getOpsError(err, option);
-    return res.status(statusCode).json({ statusCode, name, message });
+    const { code: statusCode, name, message, debug } = getOpsError(err, option);
+    return res.status(statusCode).json({ statusCode, name, message, debug });
 }
 
 ```
@@ -227,7 +227,8 @@ router.get('/user', async (req, res) => {
 const { OpsError } = require("ops-error");
 
 class PaymentRequiredError extends OpsError {
-    static statusCode(){ return 402 }
+    getCode() { return 402 };
+    getName() { return 'PaymentRequiredError' };
 }
 
 module.exports = PaymentRequiredError;
@@ -243,14 +244,20 @@ const PaymentRequiredError = require("./PaymentRequiredError");
 
 const router = Router();
 
-router.get('/user', async (req, res) => {
+router.get('/user-payment', async (req, res) => {
     try {
-        const data = await findUser();
+        const data = await findUserPayment();
         if (!data) {
             throw new PaymentRequiredError('User payment is required');
             // or
             // throw new PaymentRequiredError();
             // message will generete => "Payment Required Error"
+            // if error show response :
+            // {
+            //     "statusCode": 402,
+            //     "name": "PaymentRequiredError",
+            //     "message": "User payment is required"
+            // }
         }
         return res.status(200).json({
             statusCode: 200,
@@ -264,36 +271,6 @@ router.get('/user', async (req, res) => {
 module.exports = router;
 
 ```
-
-```JavaScript
-
-// index.js or app.js
-
-const express = require("express");
-const { NotFoundError, expressOpsError, addThrowErrors } = require("ops-error");
-const PaymentRequiredError = require("./PaymentRequiredError");
-const router = require("./router");
-
-// add custom throw error
-addThrowErrors([PaymentRequiredError]);
-
-const app = express();
-app.use('/api/v1', router);
-app.use(expressOpsError());
-
-// response error :
-// {
-//     "statusCode": 402,
-//     "name": "Payment Required Error",
-//     "message": "User payment is required"
-// }
-
-app.listen(3000, () => {
-    console.log('Success running ' + 3000);
-});
-
-```
-
 
 ## List Error Available In This Library
 
@@ -318,7 +295,6 @@ app.listen(3000, () => {
 |Name |Description |
 |--- |--- |
 |`getOpsError`|Display error status, name and message. Example =>  `const { statusCode, name, message } = getError(err, option?);`|
-|`addThrowErrors`|Add custom throw error. Example =>  `addThrowErrors([SomeErrorClass]);`|
 |`expressOpsError`|Middleware error handling for express. Example =>  `app.use(expressOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
 |`koaOpsError`|Middleware error handling for Koa. Example =>  `app.use(koaOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|
 |`fastifyOpsError`|Middleware error handling for Koa. Example =>  `app.setErrorHandler(fastifyOpsError(config?: {debug: boolean, transform: (action: any) => Promise<any>}));`|

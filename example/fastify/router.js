@@ -1,5 +1,5 @@
 const { BadRequestError } = require('ops-error');
-const { PaymentRequiredError } = require('./customThrowError');
+const PaymentRequiredError = require('./PaymentRequiredError');
 
 const setUpRouter = (app) => {
     app.get('/test', (request, reply) => {

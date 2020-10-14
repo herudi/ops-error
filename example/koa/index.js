@@ -1,10 +1,6 @@
 const Koa = require('koa');
-const { addThrowErrors, koaOpsError } = require('ops-error');
-const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
+const { koaOpsError } = require('ops-error');
 const router = require('./router');
-
-//custom throw error
-addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = new Koa();
 

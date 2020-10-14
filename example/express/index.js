@@ -1,10 +1,6 @@
 const express = require('express');
-const { addThrowErrors, expressOpsError } = require('ops-error');
+const { expressOpsError } = require('ops-error');
 const router = require('./router');
-const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
-
-//custom throw error
-addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = express();
 app.use('/', router);

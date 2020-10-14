@@ -1,10 +1,6 @@
 import express from 'express';
-import { addThrowErrors, expressOpsError } from 'ops-error';
-import { PaymentRequiredError, NetworkAuthenticationRequiredError } from './customThrowError';
+import { expressOpsError } from 'ops-error';
 import router from './router';
-
-//custom throw error
-addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = express();
 app.use('/', router);

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { BadRequestError } from "ops-error";
-import { PaymentRequiredError } from './customThrowError';
+import PaymentRequiredError from './PaymentRequiredError';
 
 const router = Router();
 

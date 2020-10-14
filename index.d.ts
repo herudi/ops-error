@@ -1,65 +1,77 @@
 export class OpsError extends Error {
     constructor(message?: any);
-    getOpsError(): any;
+    code: any;
 }
 export class BadRequestError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class UnauthorizedError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class ForbiddenError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class NotFoundError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class MethodNotAllowedError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class RequestTimeoutError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class ConflictError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class UnsupportedMediaTypeError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class UnprocessableEntityError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class InternalServerError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class NotImplementedError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class BadGatewayError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
 export class ServiceUnavailableError extends OpsError {
-    static statusCode(): number;
     constructor(message?: any);
+    getCode(): number;
+    getName(): string;
 }
-export function addThrowErrors(newErrors: any): any;
 export function getOpsError(error: any, { request, debug }?: {
     request: any;
     debug?: boolean;
 }): {
-    statusCode: any;
+    code: any;
     name: any;
     message: any;
 };

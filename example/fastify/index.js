@@ -1,10 +1,6 @@
 const fastify = require('fastify');
-const { addThrowErrors, fastifyOpsError } = require('ops-error');
-const { PaymentRequiredError, NetworkAuthenticationRequiredError } = require('./customThrowError');
+const { fastifyOpsError } = require('ops-error');
 const setUpRouter = require('./router');
-
-//custom throw error
-addThrowErrors([PaymentRequiredError, NetworkAuthenticationRequiredError]);
 
 let app = fastify();
 

@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { BadRequestError } = require('ops-error');
-const { PaymentRequiredError } = require('./customThrowError');
+const PaymentRequiredError = require('./PaymentRequiredError');
 
 const router = Router();
 
