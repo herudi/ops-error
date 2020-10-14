@@ -9,3 +9,6 @@
 
 /example/express-ts/node_modules
 /example/express-ts/yarn.lock
+
+/example/hapi/node_modules
+/example/hapi/yarn.lock
