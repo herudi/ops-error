@@ -50,17 +50,6 @@ class UnprocessableEntityError extends OpsError {
     getCode() { return 422 };
     getName() { return 'UnprocessableEntityError' };
 };
-const error4xxClass = [
-    BadRequestError,
-    UnauthorizedError,
-    ForbiddenError,
-    NotFoundError,
-    MethodNotAllowedError,
-    RequestTimeoutError,
-    ConflictError,
-    UnsupportedMediaTypeError,
-    UnprocessableEntityError
-];
 
 //5xx error
 class InternalServerError extends OpsError {
@@ -79,12 +68,6 @@ class ServiceUnavailableError extends OpsError {
     getCode() { return 503 };
     getName() { return 'ServiceUnavailableError' };
 };
-const error5xxClass = [
-    InternalServerError,
-    NotImplementedError,
-    BadGatewayError,
-    ServiceUnavailableError
-];
 
 const debugResponse = ({ error, request, httpCode }) => {
     let stack;
@@ -125,7 +108,7 @@ const opsErrorPrint = (data) => {
     try { console.dir(data,{depth:null}) } catch {console.log(data)}
 }
 
-const getOpsError = (error, { request, debug = false, logging = null } = {}) => {
+const getOpsError = (error, { request = null, debug = false, logging = null } = {}) => {
     let responseData = getErrorObject(error);
     if (error.body) {
         responseData.message = 'Could not parse JSON body.';

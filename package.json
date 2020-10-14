@@ -1,6 +1,6 @@
 {
   "name": "ops-error",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Error handling made in simple for express and other nodejs framework",
   "main": "index.js",
   "types": "index.d.ts",
