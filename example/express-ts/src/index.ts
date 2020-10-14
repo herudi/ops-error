@@ -9,6 +9,8 @@ app.use('/', router);
 app.use(expressOpsError({
     debug: true,
     transform: ({ res, data }: any) => {
+        // your logic error here
+        // if(true) return blah;
         return res.status(data.statusCode).json(data);
     }
 }));

@@ -8,6 +8,8 @@ let app = new Koa();
 app.use(koaOpsError({
     debug: true,
     transform: ({ err, req, res, next, data }) => {
+        // your logic error here
+        
         res.status = data.statusCode;
         res.body = data;
     }

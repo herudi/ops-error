@@ -8,6 +8,8 @@ let app = fastify();
 app.setErrorHandler(fastifyOpsError({
     debug: true,
     transform: ({ err, req, res, next, data }) => {
+        // your logic error here
+        // if(true) return blah;
         return res.status(data.statusCode).send(data);
     }
 }));

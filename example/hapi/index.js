@@ -15,6 +15,8 @@ const init = async () => {
     app.ext('onPreResponse', hapiOpsError({
         debug: true,
         transform: ({err, req, hapi, data}) => {
+            // your logic error here
+            // if(true) return blah;
             return hapi.response(data).code(data.statusCode);
         }
     }));

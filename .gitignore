@@ -12,3 +12,6 @@
 
 /example/hapi/node_modules
 /example/hapi/yarn.lock
+
+/example/restify/node_modules
+/example/restify/yarn.lock

@@ -2,25 +2,27 @@ const { BadRequestError } = require('ops-error');
 const PaymentRequiredError = require('./PaymentRequiredError');
 
 const setUpRouter = (app) => {
-    app.get('/test', (request, reply) => {
+    app.get('/test', (req, res, next) => {
         try {
-            if (!request.query.name) {
+            const query = req.getQuery();
+            if (!query.name) {
                 throw new BadRequestError('Please give query /test?name=yourname');
             }
-            return reply.send({statusCode: 200, data: request.query.name});
+            return res.send({statusCode: 200, data: query.name});
         } catch (error) {
-            throw error;
+            next(error);
         }
     });
     
-    app.get('/payment', (request, reply) => {
+    app.get('/payment', (req, res, next) => {
         try {
-            if (!request.query.pay) {
+            const query = req.getQuery();
+            if (!query.pay) {
                 throw new PaymentRequiredError('Payment required. please give query /payment?pay=5000');
             }
-            return reply.send({statusCode: 200, data: request.query.pay});
+            return res.send({statusCode: 200, data: querypay});
         } catch (error) {
-            throw error;
+            next(error);
         }
     });
 };
