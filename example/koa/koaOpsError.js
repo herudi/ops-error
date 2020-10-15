@@ -1,6 +1,6 @@
 const { getOpsError } = require('ops-error');
 
-const koaOpsError = () => (ctx, next) => {
+const koaOpsError = () => async (ctx, next) => {
     try {
         await next();
     } catch (err) {

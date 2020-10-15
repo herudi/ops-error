@@ -2,6 +2,7 @@ wiki.md
 
 /example/express/node_modules
 /example/express/yarn.lock
+/example/express/opsError.js
 
 /example/koa/node_modules
 /example/koa/yarn.lock

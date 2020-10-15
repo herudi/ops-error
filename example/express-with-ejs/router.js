@@ -4,7 +4,7 @@ const PaymentRequiredError = require('./PaymentRequiredError');
 
 const router = Router();
 
-router.get('/test', (req, res) => {
+router.get('/test', (req, res, next) => {
     try {
         if (!req.query.name) {
             throw new BadRequestError('Please give query /test?name=yourname');
@@ -13,11 +13,11 @@ router.get('/test', (req, res) => {
             name: req.query.name
         });
     } catch (error) {
-        throw error;
+        next(error);
     }
 });
 
-router.get('/payment', (req, res) => {
+router.get('/payment', (req, res, next) => {
     try {
         if (!req.query.pay) {
             throw new PaymentRequiredError('Payment required. please give query /payment?pay=5000');
@@ -26,7 +26,7 @@ router.get('/payment', (req, res) => {
             pay: req.query.pay
         });
     } catch (error) {
-        throw error;
+        next(error);
     }
 });
 

@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.9-blue.svg)](https://npmjs.org/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.2.0-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 [![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 
@@ -42,7 +42,7 @@ const { NotFoundError } = require("ops-error");
 // import { NotFoundError } from "ops-error";
 
 //example route
-router.get('/user', async (req, res) => {
+router.get('/user', async (req, res, next) => {
     try {
         const data = await findUser();
         if (!data) {
@@ -56,7 +56,7 @@ router.get('/user', async (req, res) => {
             data
         })
     } catch (error) {
-        throw error;
+        next(error);
     }
 });
 
@@ -197,7 +197,7 @@ const PaymentRequiredError = require("./PaymentRequiredError");
 
 const router = Router();
 
-router.get('/user-payment', async (req, res) => {
+router.get('/user-payment', async (req, res, next) => {
     try {
         const data = await findUserPayment();
         if (!data) {
@@ -217,7 +217,7 @@ router.get('/user-payment', async (req, res) => {
             data
         })
     } catch (error) {
-        throw error;
+        next(error);
     }
 });
 
