@@ -1,6 +1,6 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.1.8-blue.svg)](https://npmjs.org/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.1.9-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 [![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 
@@ -22,6 +22,13 @@ $ npm install ops-error
 //or
 $ yarn add ops-error
 ```
+
+## Wiki OpsError
+1. [Express error handling with ops-error](https://github.com/herudi/ops-error/wiki/Express-Error-Handling)
+2. [Koa error handling with ops-error](https://github.com/herudi/ops-error/wiki/Koa-Error-Handling)
+3. [Fastify error handling with ops-error](https://github.com/herudi/ops-error/wiki/Fastify-Error-Handling)
+4. [Hapi error handling with ops-error](https://github.com/herudi/ops-error/wiki/Hapi-Error-Handling)
+5. [Restify error handling with ops-error](https://github.com/herudi/ops-error/wiki/Restify-Error-Handling)
 ## Throwing error in route with try catch
 For complete code you can find code in example folder.
 
@@ -107,7 +114,7 @@ app.use((err, req, res, next) => {
 //         ],
 //         "request": {
 //             "method": "GET",
-//             "uri": "/payment",
+//             "uri": "/user",
 //             "headers": {
 //                 "user-agent": "PostmanRuntime/7.26.5",
 //                 "accept": "*/*",
@@ -117,7 +124,7 @@ app.use((err, req, res, next) => {
 //                 "connection": "keep-alive"
 //             }
 //         },
-//         "httpCode": 402
+//         "httpCode": 404
 //     }
 // }
 

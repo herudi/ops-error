@@ -2,7 +2,7 @@ const fastify = require('fastify');
 const fastifyOpsError = require('./fastifyOpsError');
 const setUpRouter = require('./router');
 
-let app = fastify();
+const app = fastify();
 
 //handling error
 app.setErrorHandler(fastifyOpsError());
