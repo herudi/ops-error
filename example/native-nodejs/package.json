@@ -1,0 +1,17 @@
+{
+    "name": "ops-error-native-nodejs-example",
+    "version": "1.0.0",
+    "description": "Example native nodejs",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon index"
+    },
+    "author": "Herudi",
+    "license": "MIT",
+    "dependencies": {
+        "ops-error": "^1.1.6"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.4"
+    }
+}

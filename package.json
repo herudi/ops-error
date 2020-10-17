@@ -1,6 +1,6 @@
 {
   "name": "ops-error",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Error handling made in simple for express, koa, fastify and other nodejs framework",
   "main": "index.js",
   "types": "index.d.ts",

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { BadRequestError } from 'ops-error';
 import PaymentRequiredError from './PaymentRequiredError';
 import { Router } from 'express';
+import ops from 'ops-error';
 
 export default class AppController {
     constructor() {}
@@ -9,7 +9,7 @@ export default class AppController {
     getTest(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.query.name) {
-                throw new BadRequestError('Please give query /test?name=yourname');
+                throw new ops.BadRequestError('Please give query /test?name=yourname');
             }
             return res.json({ statusCode: 200, data: req.query.name })
         } catch (error) {

@@ -1,3 +1,22 @@
+const self = {
+    useDebug: false,
+    useRenameResponse: null,
+    useLogging: null,
+    useErrorResponse: null
+}
+
+const config = ({
+    useDebug = false,
+    useRenameResponse = null,
+    useLogging = null,
+    useErrorResponse = null
+} = {}) => {
+    self.useDebug = useDebug;
+    self.useRenameResponse = useRenameResponse;
+    self.useLogging = useLogging;
+    self.useErrorResponse = useErrorResponse;
+}
+
 function withSpace(string) {
     string = string.replace(/([a-z])([A-Z])/g, '$1 $2');
     string = string.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
@@ -8,6 +27,8 @@ class OpsError extends Error {
     constructor(message = null) {
         super();
         this.code = this.getCode();
+        this.statusCode = this.getCode();
+        this.status = this.getCode();
         this.name = this.getName();
         this.message = message || withSpace(this.getName() || 'UnknownError');
     }
@@ -82,9 +103,9 @@ const debugResponse = ({ error, request, httpCode }) => {
     if (stack) {
         _debugResponse = {
             stack,
-            request: request ? {
+            request: (request && request.method) ? {
                 method: request.method,
-                uri: request.originalUrl || request.url,
+                uri: request.url,
                 body: request.body,
                 headers: request.headers || request.header
             } : undefined,
@@ -104,40 +125,94 @@ const getErrorObject = (err) => {
     }
 }
 
-const opsErrorPrint = (data) => {
-    try { console.dir(data,{depth:null}) } catch {console.log(data)}
+const print = (data) => {
+    try { console.dir(data, { depth: null }) } catch { console.log(data) }
 }
 
-const getOpsError = (error, { request = null, debug = false, logging = null } = {}) => {
+const getSchemaKey = (_schema, _original) => {
+    return _schema ? _schema : _original;
+}
+
+const getError = (error, request = null) => {
     let responseData = getErrorObject(error);
+    let httpCode = responseData.statusCode;
     if (error.body) {
         responseData.message = 'Could not parse JSON body.';
     }
-    if (debug) {
+    if (self.useDebug) {
         responseData.debug = debugResponse({
             error,
             request,
-            httpCode: responseData.statusCode
+            httpCode
         });
-        opsErrorPrint(responseData);
     };
-    if (logging) {
+    if (self.useRenameResponse) {
+        const _schema = self.useRenameResponse;
+        const _data = responseData;
+        let responseDataWithSchema = {
+            [getSchemaKey(_schema.statusCode, 'statusCode')]: _data.statusCode,
+            [getSchemaKey(_schema.name, 'name')]: _data.name,
+            [getSchemaKey(_schema.message, 'message')]: _data.message,
+            debug: _data.debug
+        };
+        responseData = responseDataWithSchema;
+    }
+    if (self.useLogging) {
         const log = responseData.debug || debugResponse({
             error,
             request,
-            httpCode: responseData.statusCode
+            httpCode
         });
-        logging({
+        const _data = {
             ...responseData,
             debug: log
-        });
+        }
+        if (typeof self.useLogging === 'boolean') {
+            print(_data);
+        }
+        if (typeof self.useLogging === 'function') {
+            self.useLogging(_data);
+        }
     }
-    return responseData;
+    return responseData || null;
+};
+
+function catchError(err, args) {
+    if (self.useErrorResponse) {
+        return self.useErrorResponse(err, ...args);
+    };
+    const _next = args[args.length - 1];
+    const isNext = (typeof _next === 'function') && _next.name === 'next';
+    if (isNext) {
+        return _next(err);
+    } else {
+        throw err;
+    }
+}
+
+function next(error, ...args) {
+    return catchError(error, args);
+}
+
+const wrap = (handler) => (...args) => {
+    const isAsync = handler.constructor.name === "AsyncFunction";
+    if (isAsync) {
+        return Promise
+            .resolve(handler(...args))
+            .catch((err) => {
+                return catchError(err, args);
+            });
+    } else {
+        try {
+            return handler(...args);
+        } catch (err) {
+            return catchError(err, args);
+        }
+    }
 };
 
 module.exports = {
     OpsError,
-    //4xx
     BadRequestError,
     UnauthorizedError,
     ForbiddenError,
@@ -147,11 +222,13 @@ module.exports = {
     ConflictError,
     UnsupportedMediaTypeError,
     UnprocessableEntityError,
-    //5xx
     InternalServerError,
     NotImplementedError,
     BadGatewayError,
     ServiceUnavailableError,
-    getOpsError,
-    opsErrorPrint
+    next,
+    config,
+    getError,
+    wrap,
+    print
 }

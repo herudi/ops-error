@@ -1,19 +1,19 @@
 # OpsError
 
-[![npm version](https://img.shields.io/badge/npm-1.2.0-blue.svg)](https://npmjs.org/package/ops-error) 
+[![npm version](https://img.shields.io/badge/npm-1.2.1-blue.svg)](https://npmjs.org/package/ops-error) 
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 [![download-url](https://img.shields.io/npm/dm/ops-error.svg)](https://npmjs.org/package/ops-error)
 
-Error handling made in simple for express, koa, fastify and other your favorite nodejs framework.
+Error handling made in simple for your favorite nodejs framework.
 
 ## Features
 
 - Easy to use.
 - Easy configuration.
 - Custom throw error.
-- Debuging and logging.
+- Debugging and logging.
 - Support Commonjs, ES6+ and Typescript.
-- Support expressJS, koa, fastify and other nodejs framework.
+- Also support Native Nodejs, Express, Koa, Fastify, Hapi and more.
 
 ## Installation
 
@@ -23,85 +23,89 @@ $ npm install ops-error
 $ yarn add ops-error
 ```
 
-## Wiki OpsError
+## Usage (example for native nodejs http server)
+Of course, OpsError support for other framework you can find code in example folder or this wiki.
+
+```js
+
+const http = require("http");
+const ops = require('ops-error');
+// or esm and typescript
+// import ops from 'ops-error';
+
+// it's using wrap asynchronous.
+const app = http.createServer(ops.wrap((req, res) => {
+    if (req.url === '/bad') {
+        throw new ops.BadRequestError('Bad request error for url /bad');
+    }
+    if (req.url === '/not') {
+        throw new ops.NotFoundError('Not found error for url /not');
+    }
+    res.end('horayyy');
+}));
+
+// if using try and catch block.
+const app = http.createServer((req, res) => {
+    try {
+        if (req.url === '/bad') {
+            throw new ops.BadRequestError('Bad request error for url /bad');
+        }
+        if (req.url === '/not') {
+            throw new ops.NotFoundError('Not found error for url /not');
+        }
+        res.end('horayyy');
+    }catch(err) {
+        return ops.next(err, req, res);
+    }
+});
+
+// simple config
+ops.config({
+    useErrorResponse: (err, req, res) => {
+        const data = ops.getError(err, req);
+        res.writeHead(data.statusCode, { 'Content-Type': 'application/json;charset=utf-8' });
+        res.end(JSON.stringify(data));
+    }
+});
+
+app.listen(3000, () => {
+    console.log('Success running ' + 3000);
+});
+
+// example response error if access url /bad :
+// {
+//     "statusCode": 400,
+//     "name": "BadRequestError",
+//     "message": "Bad request error for url /bad"
+// }
+
+```
+
+## Wiki for framework
 1. [Express error handling with ops-error](https://github.com/herudi/ops-error/wiki/Express-Error-Handling)
 2. [Koa error handling with ops-error](https://github.com/herudi/ops-error/wiki/Koa-Error-Handling)
 3. [Fastify error handling with ops-error](https://github.com/herudi/ops-error/wiki/Fastify-Error-Handling)
 4. [Hapi error handling with ops-error](https://github.com/herudi/ops-error/wiki/Hapi-Error-Handling)
 5. [Restify error handling with ops-error](https://github.com/herudi/ops-error/wiki/Restify-Error-Handling)
-## Throwing error in route with try catch
-For complete code you can find code in example folder.
+
+## Debugging And Logging
 
 ```js
-
-// router.js
 ...
 
-const { NotFoundError } = require("ops-error");
-// or esm and typescript
-// import { NotFoundError } from "ops-error";
-
-//example route
-router.get('/user', async (req, res, next) => {
-    try {
-        const data = await findUser();
-        if (!data) {
-            throw new NotFoundError('User Not Found');
-            // or
-            // throw new NotFoundError();
-            // message will generete => "Not Found Error"
-        }
-        return res.status(200).json({
-            statusCode: 200,
-            data
-        })
-    } catch (error) {
-        next(error);
+ops.config({
+    useDebug: true,
+    useLogging: (log) => {
+        // saveLogErrorAsString(JSON.stringify(log)) 
+    },
+    // or
+    // useLogging: true
+    useErrorResponse: (err, req, res) => {
+        const data = ops.getError(err, req);
+        res.writeHead(data.statusCode, { 'Content-Type': 'application/json;charset=utf-8' });
+        res.end(JSON.stringify(data));
     }
 });
-
-module.exports = router;
-// or esm and typescript
-// export default router;
-
-...
-
-```
-
-## Handling error using middleware
-For other framework you can find in example folder.
-
-```js
-...
-
-// for example Express
-const express = require('express');
-const { getOpsError } = require('ops-error');
-const router = require('./router');
-
-const app = express();
-app.use('/', router);
-
-// simple error handling
-app.use((err, req, res, next) => {
-    // optional config
-    const option = { 
-        debug: true,
-        request: req,
-        logging: (log) => {
-            // Save error log
-        }
-    };
-    const data = getOpsError(err, option);
-    return res.status(data.statusCode).json(data);
-});
-
-// example response error :
-// {
-//     "statusCode": 404,
-//     "name": "NotFoundError",
-//     "message": "User Not Found"
-// }
 
 // example response error if debug = true :
 // {
@@ -130,47 +134,6 @@ app.use((err, req, res, next) => {
 
 ```
 
-## Other handling error
-you can use send error in catch
-
-```js
-
-// myError.js
-
-const { getOpsError } = require("ops-error");
-
-module.exports = (err, res) => {
-    const data = getOpsError(err);
-    return res.status(data.statusCode).json(data);
-}
-
-```
-
-```js
-
-// router.js
-
-const { NotFoundError } = require("ops-error");
-const myError = require("./myError");
-
-router.get('/user', async (req, res) => {
-    try {
-        const data = await findUser();
-        if (!data) {
-            throw new NotFoundError('User Not Found');
-        }
-        return res.status(200).json({
-            statusCode: 200,
-            data
-        })
-    } catch (err) {
-        // this handle error
-        return myError(err, res);
-    }
-});
-
-```
-
 ## Custom throw error
 
 ```js
@@ -190,38 +153,69 @@ module.exports = PaymentRequiredError;
 
 ```js
 
-// router.js
+const http = require("http");
+const { config, getError, wrap } = require('ops-error');
+const PaymentRequiredError = require('./PaymentRequiredError');
 
-const { Router } = require('express');
-const PaymentRequiredError = require("./PaymentRequiredError");
+const app = http.createServer(wrap((req, res) => {
+    if (req.url !== '/pay') {
+        throw new PaymentRequiredError('Payment is required. please goto /pay');
+    }
+    res.end('horayyy');
+}));
 
-const router = Router();
-
-router.get('/user-payment', async (req, res, next) => {
-    try {
-        const data = await findUserPayment();
-        if (!data) {
-            throw new PaymentRequiredError('User payment is required');
-            // or
-            // throw new PaymentRequiredError();
-            // message will generete => "Payment Required Error"
-            // if error show response :
-            // {
-            //     "statusCode": 402,
-            //     "name": "PaymentRequiredError",
-            //     "message": "User payment is required"
-            // }
-        }
-        return res.status(200).json({
-            statusCode: 200,
-            data
-        })
-    } catch (error) {
-        next(error);
+config({
+    useDebug: true,
+    useLogging: true,
+    useErrorResponse: (err, req, res) => {
+        const data = getError(err, req);
+        res.writeHead(data.statusCode, { 'Content-Type': 'application/json;charset=utf-8' });
+        res.end(JSON.stringify(data));
     }
 });
 
-module.exports = router;
+app.listen(3000, () => {
+    console.log('Success running ' + 3000);
+});
+
+```
+
+## Example Config
+
+```js
+
+...
+
+const ops = require('ops-error');
+
+ops.config({
+    useDebug: true,
+    useLogging: (log) => {
+        // ops.print(log);
+        // saveLogErrorAsString(JSON.stringify(log));
+    },
+    // rename response key. the default is { statusCode, name, message }.
+    useRenameResponse: {
+        // rename statusCode to code
+        statusCode: 'code',
+        // rename name to error
+        name: 'error'
+    },
+    useErrorResponse: (err, req, res) => {
+        const data = ops.getError(err, req);
+        // after useRenameResponse is configured. response was change.
+        // console.log(data)
+        // {
+        //     "code": 400,
+        //     "error": "BadRequestError",
+        //     "message": "Bad request error for url /bad"
+        // }
+        res.writeHead(data.code, { 'Content-Type': 'application/json;charset=utf-8' });
+        res.end(JSON.stringify(data));
+    }
+});
+
+...
 
 ```
 
@@ -247,8 +241,11 @@ module.exports = router;
 
 |Name |Description |
 |--- |--- |
-|`getOpsError`|Display error status, name and message. Example =>  `const { statusCode, name, message, debug } = getError(err, option?);`|
-|`opsErrorPrint`|print in terminal. Example => `opsErrorPrint(data)`|
+|`ops.config`|Configure ops error. Example =>  `ops.config({ yourconfig })`|
+|`ops.getError`|Display error status, name and message. Example =>  `const data = ops.getError(err, req?);`|
+|`ops.print`|print in terminal. Example => `ops.print(data)`|
+|`ops.wrap`|Wrap an asynchronous without try and catch. Example => `ops.wrap((req, res) => res;)`|
+|`ops.next`|Optional if an function using try and catch block. Example => `ops.next(err, req, res)`|
 
 
 Contact me : herudi7@gmail.com

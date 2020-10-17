@@ -1,6 +1,8 @@
 export class OpsError extends Error {
     constructor(message?: any);
     code: any;
+    statusCode: any;
+    status: any;
 }
 export class BadRequestError extends OpsError {
     constructor(message?: any);
@@ -67,13 +69,13 @@ export class ServiceUnavailableError extends OpsError {
     getCode(): number;
     getName(): string;
 }
-export function getOpsError(error: any, { request, debug, logging }?: {
-    request?: any;
-    debug?: boolean;
-    logging?: any;
-}): {
-    statusCode: any;
-    name: any;
-    message: any;
-};
-export function opsErrorPrint(data: any): void;
+export function next(error: any, ...args: any[]): any;
+export function config({ useDebug, useRenameResponse, useLogging, useErrorResponse }?: {
+    useDebug?: boolean;
+    useRenameResponse?: any;
+    useLogging?: any;
+    useErrorResponse?: any;
+}): void;
+export function getError(error: any, request?: any): any;
+export function wrap(handler: any): (...args: any[]) => any;
+export function print(data: any): void;

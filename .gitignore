@@ -1,3 +1,4 @@
+/wiki
 wiki.md
 
 /example/express/node_modules
@@ -21,3 +22,6 @@ wiki.md
 
 /example/express-with-ejs/node_modules
 /example/express-with-ejs/yarn.lock
+
+/example/native-nodejs/node_modules
+/example/native-nodejs/yarn.lock
