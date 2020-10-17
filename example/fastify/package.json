@@ -10,7 +10,7 @@
     "license": "MIT",
     "dependencies": {
         "fastify": "^3.6.0",
-        "ops-error": "^1.1.6"
+        "ops-error": "^1.2.1"
     },
     "devDependencies": {
         "nodemon": "^2.0.4"

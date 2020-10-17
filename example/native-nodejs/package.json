@@ -9,7 +9,7 @@
     "author": "Herudi",
     "license": "MIT",
     "dependencies": {
-        "ops-error": "^1.1.6"
+        "ops-error": "^1.2.1"
     },
     "devDependencies": {
         "nodemon": "^2.0.4"

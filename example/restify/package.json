@@ -9,7 +9,7 @@
     "author": "Herudi",
     "license": "MIT",
     "dependencies": {
-        "ops-error": "^1.1.6",
+        "ops-error": "^1.2.1",
         "restify": "^8.5.1"
     },
     "devDependencies": {
